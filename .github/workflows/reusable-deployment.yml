@@ -77,22 +77,22 @@ jobs:
           kind load docker-image $IMAGE_TAG
 
       # КРОК 3: Dry Run Helm
-      # ВИДАЛЕНО: всі секрети (MYSQL_*, APP_*)
       - name: Dry Run Helm
         run: |
           helm install --dry-run ${{ inputs.helm-release-name }} ./todoapp-*.tgz  \
           -f ${{ inputs.helm-values-path }} \
           --set todoapp.image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DockerImageName }} \
-          --set todoapp.image.tag=${{ inputs.version }}
+          --set todoapp.image.tag=${{ inputs.version }} \
+          --namespace ${{ inputs.environment }} --create-namespace # ОНОВЛЕНО
 
       # КРОК 4: Deploy helm
-      # ВИДАЛЕНО: всі секрети (MYSQL_*, APP_*)
       - name: Deploy helm
         run: |
           helm upgrade --install --wait --timeout 180s --debug ${{ inputs.helm-release-name }} ./todoapp-*.tgz \
           -f ${{ inputs.helm-values-path }} \
           --set todoapp.image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DockerImageName }} \
-          --set todoapp.image.tag=${{ inputs.version }}
+          --set todoapp.image.tag=${{ inputs.version }} \
+          --namespace ${{ inputs.environment }} --create-namespace # ОНОВЛЕНО
 
       - name: Verify Deployment
         run: kubectl get pods -n ${{ inputs.environment }} # Додано -n ${{ inputs.environment }} для кращої перевірки
