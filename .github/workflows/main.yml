@@ -102,7 +102,8 @@ jobs:
   docker-ci:
     name: Build and Push Image
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' }}
+    # ЗМІНА ТУТ: Додано перевірку на ручний запуск
+    if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'
     needs: python-ci
     steps:
 
@@ -129,7 +130,8 @@ jobs:
   helm-ci:
     runs-on: ubuntu-latest
     needs: python-ci
-    if: github.ref_name == 'main'
+    # ЗМІНА ТУТ: Додано перевірку на ручний запуск
+    if: github.ref_name == 'main' || github.event_name == 'workflow_dispatch'
     name: Helm CI
     steps:
 
